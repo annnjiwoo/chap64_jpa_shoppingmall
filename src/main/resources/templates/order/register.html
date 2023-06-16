@@ -1,0 +1,93 @@
+<html layout:decorate="~{layout/layout2}">
+    <div layout:fragment="content" class="container my-3">
+        <div>
+            <form id="orderForm" name="orderForm" action="/order/register" 
+                    th:action="@{/order/register}" 
+                    method="post">
+                <div class="form-group">
+                    <label for="orderItemId">주문번호</label>
+                    <input type="text" class="form-control" id="orderItemId" name="orderItemId" 
+                            th:value="${order.orderItemId}" required>
+                    <small class="text-danger" th:errors="${ordertDTO.orderItemId}"></small>
+                </div>
+                
+
+                
+
+                 <div class="form-group">
+                    <label for="productId">상품선택</label>
+                    <select class="form-control" id="productId" name="productId">
+                        <option th:each="product : ${productList}" 
+                                th:value="${product.productId}"
+                                th:text="${product.productName}">
+                        </option>
+                    </select>
+                    <small class="text-danger" th:errors="${orderDTO.productId}"></small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="quantity">수량</label>
+                    <input type="number" class="form-control" id="quantity" name="quantity"
+                    	th:value="${order.quantity}" required>
+                    <small class="text-danger" th:errors="${orderDTO.quantity}"></small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="price">가격</label>
+                    <input type="number" class="form-control" id="price" name="price"
+                    	th:value="${product.price}" required>
+                    <small class="text-danger" th:errors="${orderDTO.price}"></small>
+                </div>
+                
+                
+                <button type="button" id="btnSubmit" class="btn btn-primary">저장</button>
+            </form>
+        </div>
+    </div>
+</html>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+$(document).ready(function() {
+    $('#btnSubmit').on('click', function(event) {
+        event.preventDefault();
+
+        // Get the form data
+        const orderItemId = $('#orderItemId').val();
+        const productId = $('#productId').val();
+        const price = $('#price').val();
+        const quantity = $('#quantity').val();
+
+        // Validate the form data
+        if (productId.trim() === '') {
+            alert('상품명을 입력하세요.');
+            return;
+        }
+
+        // Create the form data object
+        const formData = {
+        	orderItemId: orderItemId,
+        	productId: productId,
+        	price: price,
+        	quantity: quantity
+        };
+
+        // Send the form data to the server
+        $.ajax({
+            type: 'POST',
+            url: '/order/register',
+            data: JSON.stringify(formData),
+            contentType: 'application/json',
+            success: function(response) {
+                alert('주문 등록이 완료되었습니다.');
+                // Redirect or update UI as needed
+            },
+            error: function(xhr, status, error) {
+                alert('주문 등록에 실패하였습니다.');
+                // Handle error case
+            }
+        });
+    });
+});
+</script>
